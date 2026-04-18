@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Calculator, LayoutGrid, BarChart3, Users, ArrowRight } from "lucide-react";
+import { Calculator, LayoutGrid, BarChart3, Users, Settings } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function HomePage() {
@@ -15,7 +15,7 @@ export function HomePage() {
     {
       id: "products",
       title: "Продукты",
-      description: "Узнайте подробнее о каждом решении экосистемы Smart Restaurant.",
+      description: "Подробная информация о каждом решении экосистемы Smart Restaurant.",
       icon: <LayoutGrid size={24} className="text-[#1FCC59]" />,
       link: "/products",
       isReady: true,
@@ -39,78 +39,62 @@ export function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center pt-16 pb-12 px-4 font-sans text-gray-900">
-      <div className="w-full max-w-4xl flex flex-col flex-grow">
+    <div className="min-h-screen bg-white flex flex-col items-center pt-16 px-4 font-sans text-gray-900">
+      <div className="w-full max-w-4xl">
         
-        {/* Заголовок */}
+        {/* Логотип и заголовок */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }} 
           animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
+          className="mb-12"
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-gray-900">Меню инструментов</h1>
-          <p className="text-gray-500 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-            Добро пожаловать в экосистему Smart Restaurant от Freedom Bank. Выберите нужный инструмент для работы с показателями вашего заведения.
+          <div className="flex items-center gap-3 mb-8">
+             <div className="w-10 h-10 bg-[#1FCC59] rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-sm">F</div>
+             <div className="flex flex-col">
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-1">Freedom Bank</span>
+                <span className="font-bold text-gray-900 leading-none">Smart Restaurant</span>
+             </div>
+          </div>
+          <h1 className="text-4xl font-bold mb-4 tracking-tight">Меню инструментов</h1>
+          <p className="text-gray-500 text-lg max-w-2xl leading-relaxed">
+            Добро пожаловать в экосистему Smart Restaurant. Выберите нужный инструмент для работы с показателями вашего заведения.
           </p>
         </motion.div>
 
         {/* Сетка карточек */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           {menuItems.map((item, index) => (
             <motion.div 
               key={item.id} 
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
-              transition={{ duration: 0.4, delay: index * 0.1 }}
+              transition={{ delay: index * 0.1 }}
             >
               {item.isReady ? (
-                // Активная карточка
                 <Link to={item.link} className="block h-full group outline-none">
-                  <div className="bg-white rounded-[28px] p-8 border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#1FCC59]/30 transition-all duration-300 h-full flex flex-col">
-                    <div className="flex justify-between items-start mb-6">
-                      <div className="w-14 h-14 bg-[#1FCC59]/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        {item.icon}
-                      </div>
+                  <div className="bg-[#F8F9FA] rounded-[24px] p-8 border border-transparent hover:border-[#1FCC59]/30 hover:bg-white hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm mb-6 group-hover:scale-110 transition-transform duration-300">
+                      {item.icon}
                     </div>
-                    <h3 className="text-xl font-bold mb-3 text-gray-900">{item.title}</h3>
-                    <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-grow">{item.description}</p>
-                    <div className="mt-auto flex justify-end">
-                       <div className="w-8 h-8 rounded-full flex items-center justify-center text-gray-300 group-hover:bg-[#1FCC59] group-hover:text-white transition-colors duration-300">
-                          <ArrowRight size={20} strokeWidth={2.5} />
-                       </div>
-                    </div>
+                    <h3 className="text-xl font-bold mb-2 group-hover:text-[#1FCC59] transition-colors">{item.title}</h3>
+                    <p className="text-gray-500 text-sm leading-relaxed">{item.description}</p>
                   </div>
                 </Link>
               ) : (
-                // Неактивная карточка (В разработке)
-                <div className="bg-white rounded-[28px] p-8 border border-gray-100 shadow-sm opacity-60 h-full flex flex-col cursor-not-allowed">
-                  <div className="flex justify-between items-start mb-6">
-                    <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center">
-                      {item.icon}
-                    </div>
-                    <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-3 py-1.5 rounded-lg uppercase tracking-widest">
-                      В разработке
-                    </span>
+                <div className="bg-[#F8F9FA] rounded-[24px] p-8 opacity-50 h-full flex flex-col relative border border-transparent">
+                  <div className="absolute top-6 right-6 bg-gray-200/50 px-2 py-1 rounded text-[9px] font-bold text-gray-500 uppercase tracking-tighter">
+                    В разработке
                   </div>
-                  <h3 className="text-xl font-bold mb-3 text-gray-700">{item.title}</h3>
+                  <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm mb-6">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 text-gray-700">{item.title}</h3>
                   <p className="text-gray-400 text-sm leading-relaxed">{item.description}</p>
                 </div>
               )}
             </motion.div>
           ))}
         </div>
-
-        {/* Футер: Наши партнеры */}
-        <motion.div 
-          initial={{ opacity: 0 }} 
-          animate={{ opacity: 1 }} 
-          transition={{ delay: 0.6 }}
-          className="mt-auto pt-8 text-center"
-        >
-          <span className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Наши партнеры</span>
-        </motion.div>
-
       </div>
     </div>
   );
