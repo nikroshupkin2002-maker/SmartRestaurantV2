@@ -7,10 +7,14 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Главная страница */}
         <Route path="/" element={<HomePage />} />
+        
+        {/* Страница калькулятора */}
         <Route path="/calculator" element={<CalculatorPage />} />
+        
+        {/* Страница продуктов */}
         <Route path="/products" element={<ProductsPage />} />
-        {/* В будущем добавишь сюда детальную страницу продукта */}
       </Routes>
     </Router>
   );
