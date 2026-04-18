@@ -1,14 +1,23 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { HomePage } from './pages/HomePage';
-import { CalculatorPage } from './pages/CalculatorPage';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HomePage } from "./pages/HomePage";
+import { CalculatorPage } from "./pages/CalculatorPage";
+import { ProductsPage } from "./pages/ProductsPage";
 
-export default function App() {
+function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
+        {/* Главная */}
         <Route path="/" element={<HomePage />} />
+        
+        {/* Калькулятор */}
         <Route path="/calculator" element={<CalculatorPage />} />
+        
+        {/* Продукты */}
+        <Route path="/products" element={<ProductsPage />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
+
+export default App;
