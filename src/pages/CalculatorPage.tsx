@@ -15,25 +15,21 @@ export function CalculatorPage() {
   const navigate = useNavigate();
 
   const [params, setParams] = useState({
-    loc: 1,
-    chd: 100,
-    avg: 5000,
-    marg: 70,
-    aggr: 30,
-    discount: 0,
+    loc: 1, chd: 100, avg: 5000, marg: 70, aggr: 30, discount: 0,
   });
 
   const [products, setProducts] = useState({
     p1: false, p2: false, p3: false, p4: false,
     p5: false, p6: false, p7: false, p8: false,
-    p9: true, // Добавлен Guest 360 (включен по умолчанию)
+    p9: false, // Guest 360 теперь выключен по умолчанию
   });
 
   const [appPrice, setAppPrice] = useState(420000);
   const [kioskCount, setKioskCount] = useState(1);
 
-  const handleParamChange = (field: keyof typeof params, value: number) => {
-    setParams(prev => ({ ...prev, [field]: value }));
+  const handleParamChange = (field: keyof typeof params, value: string) => {
+    const num = parseFloat(value.replace(',', '.')) || 0;
+    setParams(prev => ({ ...prev, [field]: num }));
   };
   
   const toggleProduct = (key: keyof typeof products) => {
@@ -41,19 +37,19 @@ export function CalculatorPage() {
   };
 
   const results = useMemo(() => {
-    const loc = params.loc || 0;
-    const chd = params.chd || 0;
-    const avg = params.avg || 0;
-    const marg = (params.marg || 0) / 100;
-    const aggr = (params.aggr || 0) / 100;
+    const { loc, chd, avg, marg: m, aggr: a } = params;
+    const marg = m / 100;
+    const aggr_rate = a / 100;
 
     const days = 30;
-    const delivery_share = 0.3;
-    const impact = 0.3; // ИСПРАВЛЕНО: 30% проникновения
+    const delivery_share = 0.3; 
+    const impact = 0.3; // Проникновение 30%
 
     const total_checks = chd * days * loc;
     const base_revenue = total_checks * avg;
-    const now_profit = (base_revenue * marg) - (base_revenue * delivery_share * aggr);
+    
+    // Прибыль сейчас
+    const now_profit = (base_revenue * marg) - (base_revenue * delivery_share * aggr_rate);
 
     let cost = 0;
     if (products.p1) cost += 84000 * loc;
@@ -64,16 +60,17 @@ export function CalculatorPage() {
     if (products.p6) cost += 35000 * loc;
     if (products.p7) cost += 60000 * loc;
     if (products.p8) cost += 60000 * (kioskCount || 0);
-    if (products.p9) cost += 64000; // Расчет Guest 360 (фикс за сеть)
+    if (products.p9) cost += 64000;
 
     const has_boost = products.p1 || products.p2 || products.p3 || products.p4 || products.p8;
     const has_speed = products.p2;
     const has_loyalty = products.p5;
-    // p9 добавлен в расчет возвращаемости
     const has_return = products.p1 || products.p2 || products.p3 || products.p4 || products.p5 || products.p7 || products.p8 || products.p9;
 
+    // Логика роста: (70% старых) + (30% обновленных с ростом)
+    // Средний чек +16%, Кол-во заказов +20%
     const n_avg = has_boost ? (avg * (1 - impact)) + (avg * 1.16 * impact) : avg;
-    const n_ch = has_speed ? (total_checks * (1 - impact)) + (total_checks * 1.25 * impact) : total_checks;
+    const n_ch = has_speed ? (total_checks * (1 - impact)) + (total_checks * 1.20 * impact) : total_checks;
     
     const ret_rev = has_return ? (n_ch * 0.2 * n_avg) : 0;
     const loy_rev = has_loyalty ? (n_ch * 0.2 * n_avg * 0.3) : 0;
@@ -82,24 +79,31 @@ export function CalculatorPage() {
     const final_cost = cost * (1 - (params.discount || 0) / 100);
 
     let smart_profit = (smart_rev * marg) - final_cost;
-    
-    // Экономия на агрегаторах: комиссия не платится на долю проникновения (impact)
-    if (!products.p3) {
-      smart_profit -= (smart_rev * delivery_share * (1 - impact) * aggr);
+
+    // ИСПРАВЛЕНА ЛОГИКА КОМИССИИ:
+    if (products.p3) {
+      // Если выбрана Доставка (SR Delivery), экономим комиссию на доле проникновения (30%)
+      const remaining_aggr_revenue = smart_rev * delivery_share * (1 - impact);
+      smart_profit -= (remaining_aggr_revenue * aggr_rate);
+    } else {
+      // Если Доставка НЕ выбрана, выгода от комиссии не считается (платим за все заказы доставки)
+      smart_profit -= (smart_rev * delivery_share * aggr_rate);
     }
 
     return { now_profit, smart_profit, diff: smart_profit - now_profit, cost: final_cost };
   }, [params, products, appPrice, kioskCount]);
 
-  // ИСПРАВЛЕНО: Убраны min/max и лишние стили для свободного ввода
+  // Улучшенный инпут для спокойного ввода цифр
   const InputField = ({ label, value, field, suffix="" }: any) => (
     <div className="flex flex-col gap-1.5 w-full">
       <label className="text-sm font-semibold text-gray-600">{label}</label>
       <div className="relative flex items-center">
         <input
-          type="number"
-          value={value}
-          onChange={(e) => handleParamChange(field, parseFloat(e.target.value) || 0)}
+          type="text"
+          inputMode="decimal"
+          value={value === 0 ? "" : value}
+          onChange={(e) => handleParamChange(field, e.target.value)}
+          placeholder="0"
           className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#1FCC59]/30 focus:border-[#1FCC59] focus:bg-white transition-all"
         />
         {suffix && <span className="absolute right-4 text-gray-400 font-medium">{suffix}</span>}
@@ -150,7 +154,7 @@ export function CalculatorPage() {
               </h1>
               <div className="inline-flex items-center mt-4 bg-blue-50 text-blue-700 text-sm font-semibold px-4 py-2 rounded-lg border border-blue-100">
                 <Info size={16} className="mr-2 opacity-80" />
-                Расчет ведется на 30% проникновения продукта
+                Расчет на 30% проникновения продукта
               </div>
             </div>
 
@@ -181,7 +185,6 @@ export function CalculatorPage() {
                 <Check size={20} className="text-gray-400" /> 3. Продукты
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <ProductCard label="Guest 360" priceLabel="64 000 ₸ / сеть" isChecked={products.p9} onToggle={() => toggleProduct('p9')} />
                 <ProductCard label="Без кассира" priceLabel="84 000 ₸ / лок" isChecked={products.p1} onToggle={() => toggleProduct('p1')} />
                 <ProductCard label="Без официанта" priceLabel="120 000 ₸ / лок" isChecked={products.p2} onToggle={() => toggleProduct('p2')} />
                 <ProductCard label="SR Delivery" priceLabel="60 000 ₸ / лок" isChecked={products.p3} onToggle={() => toggleProduct('p3')} />
@@ -190,29 +193,30 @@ export function CalculatorPage() {
                   extraInputs={
                     <div className="flex flex-col gap-1 w-full">
                       <label className="text-xs font-semibold text-gray-600">Цена приложения (₸)</label>
-                      <input type="number" value={appPrice} onChange={e => setAppPrice(parseFloat(e.target.value)||0)} className="w-full h-10 px-3 rounded-lg border border-[#1FCC59]/30 bg-white text-sm" />
+                      <input type="text" inputMode="decimal" value={appPrice} onChange={e => setAppPrice(parseFloat(e.target.value)||0)} className="w-full h-10 px-3 rounded-lg border border-[#1FCC59]/30 bg-white text-sm" />
                     </div>
                   }
                 />
                 <ProductCard label="Лояльность" priceLabel="60 000 ₸" isChecked={products.p5} onToggle={() => toggleProduct('p5')} />
                 <ProductCard label="AppClip" priceLabel="35 000 ₸ / лок" isChecked={products.p6} onToggle={() => toggleProduct('p6')} />
-                <ProductCard label="Автоподтягивание счета" priceLabel="60 000 ₸ / лок" isChecked={products.p7} onToggle={() => toggleProduct('p7')} />
+                <ProductCard label="Автосчет" priceLabel="60 000 ₸ / лок" isChecked={products.p7} onToggle={() => toggleProduct('p7')} />
                 <ProductCard 
                   label="Киоск" priceLabel="60 000 ₸ / ед" isChecked={products.p8} onToggle={() => toggleProduct('p8')} 
                   extraInputs={
                     <div className="flex items-center gap-2 mt-1">
                       <button onClick={(e) => { e.stopPropagation(); setKioskCount(Math.max(1, kioskCount - 1)); }} className="w-8 h-8 rounded-lg bg-[#1FCC59]/10 text-[#1FCC59] flex items-center justify-center">-</button>
-                      <input type="number" value={kioskCount} onChange={e => setKioskCount(parseInt(e.target.value)||1)} className="w-full text-center h-10 px-3 rounded-lg border border-[#1FCC59]/30 bg-white text-sm font-bold" />
+                      <input type="text" inputMode="decimal" value={kioskCount} onChange={e => setKioskCount(parseInt(e.target.value)||1)} className="w-full text-center h-10 px-3 rounded-lg border border-[#1FCC59]/30 bg-white text-sm font-bold" />
                       <button onClick={(e) => { e.stopPropagation(); setKioskCount(kioskCount + 1); }} className="w-8 h-8 rounded-lg bg-[#1FCC59]/10 text-[#1FCC59] flex items-center justify-center">+</button>
                     </div>
                   }
                 />
+                <ProductCard label="Guest 360" priceLabel="64 000 ₸ / сеть" isChecked={products.p9} onToggle={() => toggleProduct('p9')} />
               </div>
             </section>
           </div>
 
           <div className="w-full lg:w-[35%] relative">
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }} className="sticky top-24 flex flex-col gap-6">
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="sticky top-24 flex flex-col gap-6">
               <div className="bg-white rounded-[32px] p-6 sm:p-8 shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col">
                 <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">Итоговый расчет за 30 дней</h3>
 
@@ -228,11 +232,7 @@ export function CalculatorPage() {
                   <span className="text-3xl sm:text-4xl font-extrabold tracking-tight">
                     {formatMoney(results.smart_profit)} <span className="text-xl sm:text-2xl text-white/80">₸</span>
                   </span>
-                  {results.cost > 0 && (
-                    <span className="mt-3 text-xs font-medium text-white/80 bg-white/10 px-3 py-1 rounded-full">
-                      Затраты на продукты: -{formatMoney(results.cost)} ₸
-                    </span>
-                  )}
+                  {results.cost > 0 && <span className="mt-3 text-xs font-medium text-white/80 bg-white/10 px-3 py-1 rounded-full">Затраты: -{formatMoney(results.cost)} ₸</span>}
                 </div>
 
                 <motion.div key={results.diff} initial={{ scale: 0.95 }} animate={{ scale: 1 }}
