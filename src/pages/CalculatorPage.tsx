@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { 
   Info, Check, Calculator as CalcIcon, Plus, 
   Settings2, ArrowRight, ChevronLeft 
@@ -14,22 +14,24 @@ const formatMoney = (val: number) => {
 export function CalculatorPage() {
   const navigate = useNavigate();
 
+  // Состояние теперь хранит строки, чтобы ввод был комфортным
   const [params, setParams] = useState({
-    loc: 1, chd: 100, avg: 5000, marg: 70, aggr: 30, discount: 0,
+    loc: "1", chd: "100", avg: "5000", marg: "70", aggr: "30", discount: "0",
   });
 
   const [products, setProducts] = useState({
     p1: false, p2: false, p3: false, p4: false,
     p5: false, p6: false, p7: false, p8: false,
-    p9: false, // Guest 360 теперь выключен по умолчанию
+    p9: false, // Guest 360 в конце и выключен
   });
 
-  const [appPrice, setAppPrice] = useState(420000);
-  const [kioskCount, setKioskCount] = useState(1);
+  const [appPrice, setAppPrice] = useState("420000");
+  const [kioskCount, setKioskCount] = useState("1");
 
-  const handleParamChange = (field: keyof typeof params, value: string) => {
-    const num = parseFloat(value.replace(',', '.')) || 0;
-    setParams(prev => ({ ...prev, [field]: num }));
+  const handleParamChange = (field: string, value: string) => {
+    // Разрешаем только цифры и одну точку/запятую
+    const cleanValue = value.replace(/[^0-9.,]/g, "").replace(",", ".");
+    setParams(prev => ({ ...prev, [field]: cleanValue }));
   };
   
   const toggleProduct = (key: keyof typeof products) => {
@@ -37,13 +39,19 @@ export function CalculatorPage() {
   };
 
   const results = useMemo(() => {
-    const { loc, chd, avg, marg: m, aggr: a } = params;
-    const marg = m / 100;
-    const aggr_rate = a / 100;
+    // Преобразуем строки в числа для расчетов
+    const loc = parseFloat(params.loc) || 0;
+    const chd = parseFloat(params.chd) || 0;
+    const avg = parseFloat(params.avg) || 0;
+    const marg = (parseFloat(params.marg) || 0) / 100;
+    const aggr_rate = (parseFloat(params.aggr) || 0) / 100;
+    const disc = (parseFloat(params.discount) || 0) / 100;
+    const aPrice = parseFloat(appPrice) || 0;
+    const kCount = parseFloat(kioskCount) || 0;
 
     const days = 30;
     const delivery_share = 0.3; 
-    const impact = 0.3; // Проникновение 30%
+    const impact = 0.3; // 30% проникновения
 
     const total_checks = chd * days * loc;
     const base_revenue = total_checks * avg;
@@ -55,11 +63,11 @@ export function CalculatorPage() {
     if (products.p1) cost += 84000 * loc;
     if (products.p2) cost += 120000 * loc;
     if (products.p3) cost += 60000 * loc;
-    if (products.p4) cost += appPrice || 0;
+    if (products.p4) cost += aPrice;
     if (products.p5) cost += 60000;
     if (products.p6) cost += 35000 * loc;
     if (products.p7) cost += 60000 * loc;
-    if (products.p8) cost += 60000 * (kioskCount || 0);
+    if (products.p8) cost += 60000 * kCount;
     if (products.p9) cost += 64000;
 
     const has_boost = products.p1 || products.p2 || products.p3 || products.p4 || products.p8;
@@ -67,8 +75,8 @@ export function CalculatorPage() {
     const has_loyalty = products.p5;
     const has_return = products.p1 || products.p2 || products.p3 || products.p4 || products.p5 || products.p7 || products.p8 || products.p9;
 
-    // Логика роста: (70% старых) + (30% обновленных с ростом)
-    // Средний чек +16%, Кол-во заказов +20%
+    // Расчет роста на 30% базы (impact)
+    // Средний чек +16%, заказы +20%
     const n_avg = has_boost ? (avg * (1 - impact)) + (avg * 1.16 * impact) : avg;
     const n_ch = has_speed ? (total_checks * (1 - impact)) + (total_checks * 1.20 * impact) : total_checks;
     
@@ -76,24 +84,19 @@ export function CalculatorPage() {
     const loy_rev = has_loyalty ? (n_ch * 0.2 * n_avg * 0.3) : 0;
 
     const smart_rev = (n_ch * n_avg) + ret_rev + loy_rev;
-    const final_cost = cost * (1 - (params.discount || 0) / 100);
+    const final_cost = cost * (1 - disc);
 
     let smart_profit = (smart_rev * marg) - final_cost;
 
-    // ИСПРАВЛЕНА ЛОГИКА КОМИССИИ:
-    if (products.p3) {
-      // Если выбрана Доставка (SR Delivery), экономим комиссию на доле проникновения (30%)
-      const remaining_aggr_revenue = smart_rev * delivery_share * (1 - impact);
-      smart_profit -= (remaining_aggr_revenue * aggr_rate);
-    } else {
-      // Если Доставка НЕ выбрана, выгода от комиссии не считается (платим за все заказы доставки)
+    // Комиссия агрегатора: если p3 НЕ выбран, вычитаем комиссию от ВСЕЙ суммы доставки в Smart
+    if (!products.p3) {
       smart_profit -= (smart_rev * delivery_share * aggr_rate);
-    }
+    } 
+    // Если p3 выбран — комиссия не вычитается (это и есть выгода)
 
     return { now_profit, smart_profit, diff: smart_profit - now_profit, cost: final_cost };
   }, [params, products, appPrice, kioskCount]);
 
-  // Улучшенный инпут для спокойного ввода цифр
   const InputField = ({ label, value, field, suffix="" }: any) => (
     <div className="flex flex-col gap-1.5 w-full">
       <label className="text-sm font-semibold text-gray-600">{label}</label>
@@ -101,9 +104,8 @@ export function CalculatorPage() {
         <input
           type="text"
           inputMode="decimal"
-          value={value === 0 ? "" : value}
+          value={value}
           onChange={(e) => handleParamChange(field, e.target.value)}
-          placeholder="0"
           className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#1FCC59]/30 focus:border-[#1FCC59] focus:bg-white transition-all"
         />
         {suffix && <span className="absolute right-4 text-gray-400 font-medium">{suffix}</span>}
@@ -144,7 +146,7 @@ export function CalculatorPage() {
       </div>
 
       <div className="container mx-auto px-4 sm:px-8 py-8 md:py-12 max-w-6xl pb-24 lg:pb-12">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 relative">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
           
           <div className="w-full lg:w-[65%] flex flex-col gap-8 pb-12">
             <div className="mb-2">
@@ -193,7 +195,7 @@ export function CalculatorPage() {
                   extraInputs={
                     <div className="flex flex-col gap-1 w-full">
                       <label className="text-xs font-semibold text-gray-600">Цена приложения (₸)</label>
-                      <input type="text" inputMode="decimal" value={appPrice} onChange={e => setAppPrice(parseFloat(e.target.value)||0)} className="w-full h-10 px-3 rounded-lg border border-[#1FCC59]/30 bg-white text-sm" />
+                      <input type="text" inputMode="decimal" value={appPrice} onChange={e => setAppPrice(e.target.value.replace(/[^0-9]/g, ""))} className="w-full h-10 px-3 rounded-lg border border-[#1FCC59]/30 bg-white text-sm" />
                     </div>
                   }
                 />
@@ -204,9 +206,9 @@ export function CalculatorPage() {
                   label="Киоск" priceLabel="60 000 ₸ / ед" isChecked={products.p8} onToggle={() => toggleProduct('p8')} 
                   extraInputs={
                     <div className="flex items-center gap-2 mt-1">
-                      <button onClick={(e) => { e.stopPropagation(); setKioskCount(Math.max(1, kioskCount - 1)); }} className="w-8 h-8 rounded-lg bg-[#1FCC59]/10 text-[#1FCC59] flex items-center justify-center">-</button>
-                      <input type="text" inputMode="decimal" value={kioskCount} onChange={e => setKioskCount(parseInt(e.target.value)||1)} className="w-full text-center h-10 px-3 rounded-lg border border-[#1FCC59]/30 bg-white text-sm font-bold" />
-                      <button onClick={(e) => { e.stopPropagation(); setKioskCount(kioskCount + 1); }} className="w-8 h-8 rounded-lg bg-[#1FCC59]/10 text-[#1FCC59] flex items-center justify-center">+</button>
+                      <button onClick={(e) => { e.stopPropagation(); setKioskCount(String(Math.max(1, (parseInt(kioskCount)||1) - 1))); }} className="w-8 h-8 rounded-lg bg-[#1FCC59]/10 text-[#1FCC59] flex items-center justify-center">-</button>
+                      <input type="text" inputMode="numeric" value={kioskCount} onChange={e => setKioskCount(e.target.value.replace(/[^0-9]/g, ""))} className="w-full text-center h-10 px-3 rounded-lg border border-[#1FCC59]/30 bg-white text-sm font-bold" />
+                      <button onClick={(e) => { e.stopPropagation(); setKioskCount(String((parseInt(kioskCount)||1) + 1)); }} className="w-8 h-8 rounded-lg bg-[#1FCC59]/10 text-[#1FCC59] flex items-center justify-center">+</button>
                     </div>
                   }
                 />
@@ -215,7 +217,7 @@ export function CalculatorPage() {
             </section>
           </div>
 
-          <div className="w-full lg:w-[35%] relative">
+          <div className="w-full lg:w-[35%]">
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="sticky top-24 flex flex-col gap-6">
               <div className="bg-white rounded-[32px] p-6 sm:p-8 shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col">
                 <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">Итоговый расчет за 30 дней</h3>
