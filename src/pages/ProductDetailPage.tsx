@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { PRODUCTS } from "../data/products";
 import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
