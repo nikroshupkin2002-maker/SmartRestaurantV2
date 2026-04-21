@@ -1,4 +1,3 @@
-// @ts-nocheck
 export interface Product {
   id: string;
   title: string;
