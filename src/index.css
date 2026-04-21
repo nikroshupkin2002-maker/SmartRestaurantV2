@@ -1,4 +1,24 @@
-/* Магия для печати КП */
+/* 1. Базовые директивы Tailwind (БЕЗ НИХ ДИЗАЙН НЕ РАБОТАЕТ) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 2. Твои дополнительные стили для шрифтов и скролла (по желанию) */
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-content: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* 3. Магия для печати КП (чтобы работал Вариант 2) */
 @media screen {
   .print-only {
     display: none !important;
@@ -6,12 +26,10 @@
 }
 
 @media print {
-  /* Скрываем всё лишнее (кнопки, меню, фон сайта) */
   .no-print {
     display: none !important;
   }
   
-  /* Показываем только бланк КП */
   .print-only {
     display: block !important;
     width: 100%;
@@ -21,9 +39,9 @@
     background-color: white !important;
     margin: 0;
     padding: 0;
+    display: block !important; /* Сбрасываем flex при печати */
   }
 
-  /* Убираем отступы браузера для печати */
   @page {
     margin: 1.5cm;
   }
