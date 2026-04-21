@@ -1,7 +1,30 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Магия для печати КП */
+@media screen {
+  .print-only {
+    display: none !important;
+  }
+}
 
-body {
-  @apply bg-slate-50; /* Светло-серый фон как в Figma */
+@media print {
+  /* Скрываем всё лишнее (кнопки, меню, фон сайта) */
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Показываем только бланк КП */
+  .print-only {
+    display: block !important;
+    width: 100%;
+  }
+
+  body {
+    background-color: white !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Убираем отступы браузера для печати */
+  @page {
+    margin: 1.5cm;
+  }
 }
