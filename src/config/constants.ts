@@ -13,7 +13,7 @@ export const PRODUCT_COSTS = {
 export const PRODUCT_BENEFITS = {
   p1: { cat: "speed", checkInc: 0.20, avgInc: 0.16 },
   p2: { cat: "turnover", checkInc: 0.25, avgInc: 0.16 },
-  p3: { cat: "delivery", checkInc: 0, avgInc: 0.16 }, // Только для доставки
+  p3: { cat: "delivery", checkInc: 0, avgInc: 0.16 }, 
   p4: { cat: "loyalty", checkInc: 0.30, avgInc: 0.16 },
   p5: { cat: "loyalty", checkInc: 0.30, avgInc: 0.12 },
   p6: { cat: "none", checkInc: 0, avgInc: 0 },
