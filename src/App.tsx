@@ -1,21 +1,29 @@
-// @ts-nocheck
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { HomePage } from './pages/HomePage';
-import { ProductsPage } from './pages/ProductsPage';
-import { ProductDetailPage } from './pages/ProductDetailPage';
-// Импортируй файл, где лежит сам калькулятор (проверь название файла!)
-import { CalculatorPage } from './pages/CalculatorPage'; 
 
-export default function App() {
+// Импортируем компоненты страниц
+// Важно: путь должен точно совпадать с папкой, где лежит файл
+import CalculatorPage from './pages/CalculatorPage'; 
+
+// Если у тебя есть главная страница, импортируй её тоже
+// import HomePage from './pages/HomePage'; 
+
+function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        {/* ВОТ ЭТА СТРОЧКА ИСПРАВИТ БЕЛЫЙ ЭКРАН: */}
-        <Route path="/calculator" element={<CalculatorPage />} /> 
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/products/:id" element={<ProductDetailPage />} />
-      </Routes>
+      <div className="app-container">
+        <Routes>
+          {/* Главная страница (если она есть, если нет - можно поставить калькулятор первой) */}
+          <Route path="/" element={<CalculatorPage />} />
+          
+          {/* Отдельный путь для калькулятора */}
+          <Route path="/calculator" element={<CalculatorPage />} />
+          
+          {/* Сюда можно добавить другие страницы в будущем */}
+        </Routes>
+      </div>
     </Router>
   );
 }
+
+export default App;
