@@ -12,15 +12,15 @@ function App() {
         {/* Главная страница */}
         <Route path="/" element={<HomePage />} />
         
-        {/* Страница калькулятора */}
+        {/* Калькулятор — теперь он сам по себе */}
         <Route path="/calculator" element={<CalculatorPage />} />
         
-        {/* Детальная страница КОНКРЕТНОГО продукта */}
-        {/* :productId — это переменная, которая будет принимать p1, p2 и т.д. */}
+        {/* Детальная страница продукта */}
         <Route path="/product/:productId" element={<ProductDetailPage />} />
 
-        {/* Если юзер нажал на старую ссылку /products, кидаем его в калькулятор */}
-        <Route path="/products" element={<CalculatorPage />} />
+        {/* Если кто-то введет /products, вернем на главную */}
+        <Route path="/products" element={<HomePage />} />
+        <Route path="*" element={<HomePage />} />
       </Routes>
     </Router>
   );
