@@ -1,5 +1,5 @@
 import React from 'react';
-import { Truck, Zap, TrendingUp, ShieldCheck } from 'lucide-react';
+import { Truck, Zap, TrendingUp } from 'lucide-react';
 
 export const deliveryContent = {
   title: "SR Delivery",
