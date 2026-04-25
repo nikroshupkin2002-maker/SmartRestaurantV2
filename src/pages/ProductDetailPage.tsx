@@ -1,63 +1,87 @@
 // @ts-nocheck
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { 
-  ChevronLeft, CheckCircle2, RefreshCcw, 
-  Smartphone, CreditCard, Star, Zap, ScanQrCode,
-  MousePointer2, UtensilsCrossed, Truck, Heart, SmartphoneNfc, Monitor, FileSearch,
-  Users, TrendingDown, Box
+  ChevronLeft, ChevronRight, CheckCircle2, RefreshCcw, 
+  Smartphone, CreditCard, Star, Zap, Truck, 
+  MousePointer2, UtensilsCrossed, Heart, SmartphoneNfc, Monitor, FileSearch,
+  Users, TrendingDown, Box, Clock, BarChart3
 } from 'lucide-react';
 
+const PRODUCT_KEYS = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9"];
+
 const PRODUCT_INFO = {
-  // ПРОДУКТ №3: SR DELIVERY (НОВЫЙ ДИЗАЙН)
+  "p1": { 
+    isDetailed: true,
+    title: "Заказ «Без кассира»", 
+    price: "84 000 ₸", 
+    icon: <MousePointer2 size={40}/>, 
+    desc: "Система позволяет гостю самостоятельно оформить и оплатить заказ через смартфон, полностью исключая ожидание в очереди у кассы.",
+    benefits: [
+      { title: "Отсутствие очередей", text: "Весь процесс выбора и оплаты происходит в телефоне гостя, разгружая кассовую зону.", icon: <Users className="text-blue-400" /> },
+      { title: "Рост среднего чека", text: "Умная система рекомендаций предлагает доп. товары, которые кассир может забыть озвучить.", icon: <TrendingDown className="text-green-400" /> },
+      { title: "Анализ предпочтений", text: "Прозрачная статистика по популярным позициям и поведению ваших клиентов.", icon: <BarChart3 className="text-purple-400" /> }
+    ],
+    res: "+16%", resLabel: "Рост среднего чека",
+    images: [
+      { url: "/assets/basilic_1.jpg", desc: "Электронное меню" },
+      { url: "/assets/basilic_2.jpg", desc: "Корзина заказа" },
+      { url: "/assets/basilic_3.jpg", desc: "Быстрая оплата" }
+    ],
+    qrImage: { url: "/assets/basilic_qr.png", desc: "Тест-драйв заказа «Без кассира»" }
+  },
+  "p2": { 
+    isDetailed: true,
+    title: "Заказ «Без официанта»", 
+    price: "120 000 ₸", 
+    icon: <UtensilsCrossed size={40}/>, 
+    desc: "Оцифруйте каждый стол. Гости сами делают заказы и дозаказы через QR-меню, не дожидаясь персонала.",
+    benefits: [
+      { title: "Минус 15 минут", text: "Среднее время обслуживания сокращается за счет мгновенного получения заказа кухней.", icon: <Clock className="text-orange-400" /> },
+      { title: "Оборачиваемость столов", text: "Столы освобождаются на 30% быстрее, позволяя принимать больше гостей.", icon: <TrendingDown className="text-green-400" /> },
+      { title: "Оцифровка каждого гостя", text: "Вы собираете базу данных и контакты даже тех, кто пришел к вам впервые.", icon: <Users className="text-blue-400" /> }
+    ],
+    res: "+30%", resLabel: "Оборачиваемость столов",
+    images: [
+      { url: "/assets/basilic_1.jpg", desc: "Меню за столом" },
+      { url: "/assets/basilic_2.jpg", desc: "Мгновенный дозаказ" },
+      { url: "/assets/basilic_3.jpg", desc: "Разделение счета" }
+    ],
+    qrImage: { url: "/assets/basilic_qr.png", desc: "Тест-драйв заказа «Без официанта»" }
+  },
   "p3": { 
     isDetailed: true,
-    title: "SR Delivery", 
-    price: "60 000 ₸", 
-    icon: <Truck size={40}/>, 
-    desc: "Забудьте о высоких комиссиях сторонних сервисов. Мы объединяем все службы доставки в одном окне, позволяя вам экономить на каждом заказе и сохранять прямой контакт с вашим клиентом.",
+    title: "SR Delivery", price: "60 000 ₸", icon: <Truck size={40}/>, 
+    desc: "Агрегатор курьерских служб в одном окне. Экономьте на комиссиях и управляйте своей доставкой эффективно.",
     benefits: [
-      { title: "Агрегатор служб", text: "Мгновенная интеграция с Яндекс Доставка, Wolt Drive и Choco Доставка в одном интерфейсе.", icon: <Box className="text-orange-400" /> },
-      { title: "Умный подбор курьера", text: "Алгоритм в реальном времени выбирает самый выгодный и быстрый тариф среди всех служб.", icon: <Zap className="text-yellow-400" /> },
-      { title: "Экономия на комиссиях", text: "Переводите заказы в свой канал и экономьте до 30% с каждого чека, увеличивая чистую прибыль.", icon: <TrendingDown className="text-green-400" /> },
-      { title: "Сохранение базы", text: "Все данные о заказчиках остаются у вас для повторных продаж и аналитики.", icon: <Users className="text-blue-400" /> },
-      { title: "Полная синхронизация", text: "Автоматическая отправка заказов в iiko/r-keeper без участия оператора.", icon: <RefreshCcw className="text-purple-400" /> }
+      { title: "Агрегатор служб", text: "Яндекс, Wolt Drive и Choco в едином интерфейсе.", icon: <Box className="text-orange-400" /> },
+      { title: "Умный подбор", text: "Выбор самого дешевого и быстрого курьера в моменте.", icon: <Zap className="text-yellow-400" /> },
+      { title: "Своя база", text: "Данные клиентов принадлежат вам, а не агрегаторам.", icon: <Users className="text-blue-400" /> }
     ],
-    res: "0%",
-    resLabel: "Комиссия сервису",
+    res: "0%", resLabel: "Комиссия сервису",
     images: [
-      { url: "/assets/delivery_1.jpg", desc: "Брендированное меню" },
-      { url: "/assets/delivery_2.jpg", desc: "Прозрачная корзина" },
-      { url: "/assets/delivery_3.jpg", desc: "Удобная оплата" }
+      { url: "/assets/delivery_1.jpg", desc: "Меню доставки" },
+      { url: "/assets/delivery_2.jpg", desc: "Оформление заказа" },
+      { url: "/assets/delivery_3.jpg", desc: "Статус курьера" }
     ],
-    qrImage: { url: "/assets/delivery_qr.png", desc: "Отсканируйте этот QR, чтобы увидеть реальную работу доставки" }
+    qrImage: { url: "/assets/delivery_qr.png", desc: "Тест-драйв доставки" }
   },
-
-  // ПРОДУКТ №7: АВТОПОДТЯГИВАНИЕ (УЖЕ СДЕЛАННЫЙ)
   "p7": { 
     isDetailed: true,
-    title: "Автоподтягивание счета", 
-    price: "60 000 ₸", 
-    icon: <RefreshCcw size={40}/>, 
-    desc: "Освободите официантов от рутины с ношением терминала пречека — гость платит сам по QR-коду в чеке за 1 минуту.",
+    title: "Автоподтягивание счета", price: "60 000 ₸", icon: <RefreshCcw size={40}/>, 
+    desc: "Гость оплачивает счет по QR в чеке. Официанту больше не нужно носить терминал.",
     benefits: [
-      { title: "Мгновенная оплата", text: "Гостю достаточно отсканировать QR в чеке и оплатить заказ в 2 клика.", icon: <Zap className="text-yellow-400" /> },
-      { title: "Детализация", text: "Прозрачный интерфейс — гость видит все позиции и сумму обслуживания.", icon: <Smartphone className="text-blue-400" /> },
-      { title: "Любые способы", text: "Интеграция с Kaspi.kz, Apple Pay, Google Pay и картами.", icon: <CreditCard className="text-purple-400" /> }
+      { title: "Оплата в 2 клика", text: "Интеграция с Kaspi и Apple Pay.", icon: <Zap className="text-yellow-400" /> },
+      { title: "Авто-закрытие стола", text: "Синхронизация с iiko/r-keeper.", icon: <RefreshCcw className="text-green-400" /> }
     ],
-    res: "-15 мин",
-    resLabel: "Экономия времени",
+    res: "-15 мин", resLabel: "Экономия времени",
     images: [
-      { url: "/assets/bill_1.jpg", desc: "Просмотр счета" },
+      { url: "/assets/bill_1.jpg", desc: "Детализация счета" },
       { url: "/assets/pay_2.jpg", desc: "Выбор оплаты" }
     ],
-    qrImage: { url: "/assets/qr_3.png", desc: "Отсканируйте этот QR, чтобы увидеть реальную работу продукта" }
+    qrImage: { url: "/assets/qr_3.png", desc: "Тест-драйв оплаты" }
   },
-
-  // ОСТАЛЬНЫЕ (СТАНДАРТНЫЙ ВИД)
-  "p1": { title: "Заказ «Без кассира»", price: "84 000 ₸", icon: <MousePointer2 />, desc: "Автоматизация кассовой зоны.", benefits: ["Нет очередей", "Рост чека"], res: "+16%" },
-  "p2": { title: "Заказ «Без официанта»", price: "120 000 ₸", icon: <UtensilsCrossed />, desc: "QR-заказы со столов.", benefits: ["Меньше штата", "Быстрый оборот"], res: "+25%" },
+  // Остальные продукты (p4, p5, p6, p8, p9) добавлены в базовом виде для краткости примера
   "p4": { title: "Мобильное приложение", price: "420 000 ₸", icon: <Smartphone />, desc: "Свой бренд в App Store.", benefits: ["Push-уведомления", "Лояльность"], res: "+40%" },
   "p5": { title: "Программа лояльности", price: "60 000 ₸", icon: <Heart />, desc: "Бонусы и кэшбэк.", benefits: ["Возвратность", "RFM-анализ"], res: "+25%" },
   "p6": { title: "App Clip", price: "35 000 ₸", icon: <SmartphoneNfc />, desc: "Замена пейджерам.", benefits: ["Без установки", "Скорость"], res: "Modern" },
@@ -70,123 +94,126 @@ export function ProductDetailPage() {
   const navigate = useNavigate();
   const product = PRODUCT_INFO[productId];
 
-  if (!product) return <div className="p-20 text-center font-black uppercase tracking-widest">Продукт не найден</div>;
+  // Логика перелистывания
+  const currentIndex = PRODUCT_KEYS.indexOf(productId);
+  const prevProduct = PRODUCT_KEYS[currentIndex - 1];
+  const nextProduct = PRODUCT_KEYS[currentIndex + 1];
 
-  if (product.isDetailed) {
-    return (
-      <div className="min-h-screen bg-[#F8FAFC] text-[#1E293B] pb-32">
-        {/* Навигация */}
-        <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
-          <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-400 hover:text-[#1FCC59] transition-all font-bold text-xs uppercase tracking-widest">
-              <ChevronLeft size={18} /> Вернуться назад
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-[#1FCC59] rounded-lg flex items-center justify-center text-white font-black">SR</div>
-              <span className="font-black tracking-tight">Smart Restaurant</span>
-            </div>
+  if (!product) return <div className="p-20 text-center font-black">Продукт не найден</div>;
+
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] text-[#1E293B] pb-40">
+      {/* Навигация сверху */}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <button onClick={() => navigate('/products')} className="flex items-center gap-2 text-gray-400 hover:text-[#1FCC59] font-bold text-xs uppercase tracking-widest">
+            <ChevronLeft size={18} /> К списку
+          </button>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-[#1FCC59] rounded-lg flex items-center justify-center text-white font-black">SR</div>
+            <span className="font-black tracking-tight uppercase">Smart Restaurant</span>
           </div>
-        </nav>
+          <div className="w-20"></div> {/* Заглушка для центровки */}
+        </div>
+      </nav>
 
-        <main className="max-w-6xl mx-auto px-6 pt-12">
-          {/* Hero */}
-          <section className="bg-white rounded-[48px] p-8 md:p-16 shadow-xl shadow-blue-900/5 border border-gray-50 mb-12">
-            <div className="flex flex-col lg:flex-row gap-12 items-start text-left">
-              <div className="flex-1">
-                <div className="inline-flex items-center gap-2 bg-green-50 text-[#1FCC59] px-5 py-2 rounded-full mb-8 font-bold text-xs uppercase tracking-wider">
-                  <Star size={14} fill="currentColor" /> Решение Smart Restaurant
-                </div>
-                <h1 className="text-5xl md:text-7xl font-black text-gray-900 leading-[0.9] mb-8 tracking-tighter uppercase">
-                  {product.title}
-                </h1>
-                <p className="text-xl md:text-2xl text-gray-500 font-medium leading-relaxed max-w-2xl">{product.desc}</p>
-              </div>
-              <div className="bg-[#1FCC59] text-white p-12 rounded-[56px] text-center min-w-[280px] shadow-2xl shadow-[#1FCC59]/30">
-                <div className="text-7xl font-black mb-2 tracking-tighter">{product.res}</div>
-                <div className="text-xs font-bold uppercase tracking-widest opacity-90">{product.resLabel}</div>
-              </div>
-            </div>
-          </section>
-
-          {/* Benefits */}
-          <section className="mb-24 grid grid-cols-1 md:grid-cols-2 gap-6">
-            {product.benefits.map((item, i) => (
-              <div key={i} className="p-10 bg-white rounded-[40px] border border-gray-100 shadow-sm flex gap-6 items-start">
-                <div className="p-4 bg-gray-50 rounded-2xl shrink-0">{item.icon}</div>
-                <div>
-                  <h3 className="text-xl font-black mb-2">{item.title}</h3>
-                  <p className="text-gray-500 font-medium leading-relaxed">{item.text}</p>
-                </div>
-              </div>
-            ))}
-          </section>
-
-          {/* Визуал (3 фото в ряд) */}
-          <section className="mb-12 text-center">
-            <h2 className="text-3xl font-black mb-12 tracking-tight uppercase">Интерфейс решения</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {product.images.map((img, i) => (
-                <div key={i} className="group">
-                  <div className="relative rounded-[40px] overflow-hidden shadow-2xl mb-6 transition-transform group-hover:scale-[1.02]">
-                    <img src={img.url} alt="" className="w-full h-auto object-cover" />
+      <main className="max-w-6xl mx-auto px-6 pt-12">
+        {product.isDetailed ? (
+          <>
+            {/* Hero Section */}
+            <section className="bg-white rounded-[48px] p-8 md:p-16 shadow-xl shadow-blue-900/5 border border-gray-50 mb-12 relative overflow-hidden">
+              <div className="flex flex-col lg:flex-row gap-12 items-start relative z-10">
+                <div className="flex-1">
+                  <div className="inline-flex items-center gap-2 bg-green-50 text-[#1FCC59] px-5 py-2 rounded-full mb-8 font-bold text-xs uppercase">
+                     <Star size={14} fill="currentColor" /> Решение {productId.toUpperCase()}
                   </div>
-                  <p className="text-gray-900 font-black text-lg tracking-tight">{img.desc}</p>
+                  <h1 className="text-5xl md:text-7xl font-black text-gray-900 leading-[0.9] mb-8 tracking-tighter uppercase">{product.title}</h1>
+                  <p className="text-xl md:text-2xl text-gray-500 font-medium leading-relaxed max-w-2xl">{product.desc}</p>
                 </div>
-              ))}
-            </div>
-          </section>
-
-          {/* QR Блок (Отдельно ниже) */}
-          {product.qrImage && (
-            <section className="mb-24">
-              <div className="bg-white rounded-[48px] p-12 border-4 border-[#1FCC59] flex flex-col md:flex-row items-center gap-12 shadow-2xl shadow-green-900/10">
-                <div className="w-full md:w-1/3">
-                  <img src={product.qrImage.url} alt="QR" className="w-full h-auto rounded-3xl" />
-                </div>
-                <div className="flex-1 text-center md:text-left">
-                  <div className="bg-green-50 text-[#1FCC59] inline-block px-4 py-1 rounded-full text-xs font-black uppercase mb-4">Живой тест-драйв</div>
-                  <h2 className="text-3xl md:text-5xl font-black mb-6 leading-tight uppercase">{product.qrImage.desc}</h2>
-                  <p className="text-gray-500 font-bold text-lg italic">Наведите камеру смартфона, чтобы пройти путь вашего клиента прямо сейчас.</p>
+                <div className="bg-[#1FCC59] text-white p-12 rounded-[56px] text-center min-w-[280px] shadow-2xl shadow-[#1FCC59]/30">
+                  <div className="text-7xl font-black mb-2 tracking-tighter">{product.res}</div>
+                  <div className="text-xs font-bold uppercase tracking-widest opacity-90">{product.resLabel}</div>
                 </div>
               </div>
             </section>
-          )}
 
-          {/* CTA */}
-          <section className="bg-gray-900 rounded-[56px] p-12 md:p-20 text-center text-white">
-            <h2 className="text-4xl md:text-6xl font-black mb-8 leading-none uppercase">Добавить в предложение?</h2>
-            <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
-               <div className="text-3xl font-black text-[#1FCC59]">{product.price}</div>
-               <button onClick={() => navigate('/products')} className="bg-[#1FCC59] hover:bg-[#1bb34e] text-white px-12 py-6 rounded-[28px] font-black text-xl transition-all">
-                ВЫБРАТЬ ПРОДУКТ
-              </button>
-            </div>
-          </section>
-        </main>
-      </div>
-    );
-  }
+            {/* Benefits */}
+            <section className="mb-24 grid grid-cols-1 md:grid-cols-3 gap-6">
+              {product.benefits.map((item, i) => (
+                <div key={i} className="p-10 bg-white rounded-[40px] border border-gray-100 shadow-sm flex flex-col gap-6">
+                  <div className="p-4 bg-gray-50 rounded-2xl w-fit">{item.icon}</div>
+                  <div>
+                    <h3 className="text-xl font-black mb-2 uppercase">{item.title}</h3>
+                    <p className="text-gray-500 font-medium leading-relaxed">{item.text}</p>
+                  </div>
+                </div>
+              ))}
+            </section>
 
-  // Стандартный дизайн для остальных
-  return (
-    <div className="min-h-screen bg-[#F4F7F9] p-12 flex items-center justify-center">
-      <div className="max-w-3xl w-full bg-white rounded-[48px] p-16 shadow-sm border border-gray-100 text-center">
-        <button onClick={() => navigate(-1)} className="mb-12 flex items-center gap-2 text-gray-300 hover:text-gray-900 transition-all font-black uppercase text-xs">
-          <ChevronLeft size={16} /> Назад
-        </button>
-        <div className="flex justify-center mb-8">
-           <div className="p-8 bg-gray-50 rounded-[40px] text-gray-900">{product.icon}</div>
+            {/* Screenshots */}
+            <section className="mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {product.images.map((img, i) => (
+                  <div key={i}>
+                    <div className="rounded-[40px] overflow-hidden shadow-2xl mb-6 border border-gray-100">
+                      <img src={img.url} alt="" className="w-full h-auto" />
+                    </div>
+                    <p className="text-center font-black uppercase tracking-tight text-gray-400">{img.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* QR Section */}
+            {product.qrImage && (
+              <section className="mb-24">
+                <div className="bg-white rounded-[48px] p-12 border-4 border-[#1FCC59] flex flex-col md:flex-row items-center gap-12">
+                  <img src={product.qrImage.url} alt="QR" className="w-48 h-48 rounded-3xl" />
+                  <div className="text-center md:text-left">
+                    <h2 className="text-3xl font-black mb-4 uppercase">{product.qrImage.desc}</h2>
+                    <p className="text-gray-500 font-bold">Наведите камеру, чтобы протестировать решение в реальном времени.</p>
+                  </div>
+                </div>
+              </section>
+            )}
+          </>
+        ) : (
+          /* Стандартный дизайн для недоделанных страниц */
+          <div className="bg-white rounded-[48px] p-20 text-center shadow-sm border border-gray-100">
+            <div className="flex justify-center mb-8 text-[#1FCC59]">{product.icon}</div>
+            <h1 className="text-5xl font-black mb-6 uppercase tracking-tighter">{product.title}</h1>
+            <p className="text-2xl text-gray-400 max-w-2xl mx-auto mb-10">{product.desc}</p>
+            <div className="text-4xl font-black text-[#1FCC59] mb-10">{product.price}</div>
+          </div>
+        )}
+
+        {/* НИЖНЯЯ ПАНЕЛЬ ПЕРЕКЛЮЧЕНИЯ */}
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900/90 backdrop-blur-xl p-4 rounded-[32px] flex items-center gap-8 shadow-2xl z-[100] border border-white/10">
+          <button 
+            disabled={!prevProduct}
+            onClick={() => navigate(`/product/${prevProduct}`)}
+            className={`p-4 rounded-2xl transition-all ${prevProduct ? 'text-white hover:bg-white/10' : 'text-gray-600 cursor-not-allowed'}`}
+          >
+            <ChevronLeft size={24} />
+          </button>
+          
+          <div className="h-8 w-px bg-white/20"></div>
+          
+          <div className="text-white font-black text-sm uppercase tracking-widest px-4">
+            {currentIndex + 1} <span className="text-gray-500">/ {PRODUCT_KEYS.length}</span>
+          </div>
+
+          <div className="h-8 w-px bg-white/20"></div>
+
+          <button 
+            disabled={!nextProduct}
+            onClick={() => navigate(`/product/${nextProduct}`)}
+            className={`p-4 rounded-2xl transition-all ${nextProduct ? 'text-white hover:bg-white/10' : 'text-gray-600 cursor-not-allowed'}`}
+          >
+            <ChevronRight size={24} />
+          </button>
         </div>
-        <h1 className="text-5xl font-black mb-6 uppercase tracking-tighter">{product.title}</h1>
-        <p className="text-2xl text-gray-400 font-medium mb-12">{product.desc}</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-          {product.benefits.map((b, i) => (
-            <div key={i} className="p-6 bg-gray-50 rounded-3xl flex items-center gap-4 font-bold border border-gray-100">
-              <CheckCircle2 className="text-[#1FCC59]" /> {b}
-            </div>
-          ))}
-        </div>
-      </div>
+      </main>
     </div>
   );
 }
