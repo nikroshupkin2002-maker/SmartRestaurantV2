@@ -14,8 +14,7 @@ const DATA = {
     icon: <MousePointer2 size={40} />,
     desc: "Быстрый процесс заказа через терминалы или QR без очередей.",
     benefits: ["Ускорение очереди на 20%", "Авто-предложение допов (Upsell)"],
-    results: { val: "+16%", label: "Средний чек" },
-    slug: "smart-order" 
+    results: { val: "+16%", label: "Средний чек" }
   },
   "2": {
     title: "Заказ «Без официанта»",
@@ -23,8 +22,7 @@ const DATA = {
     icon: <UtensilsCrossed size={40} />,
     desc: "Мгновенный заказ со стола и полная оцифровка каждого гостя.",
     benefits: ["Освобождение персонала", "Электронное меню"],
-    results: { val: "+25%", label: "Оборачиваемость" },
-    slug: "qr-order"
+    results: { val: "+25%", label: "Оборачиваемость" }
   },
   "3": {
     title: "SR Delivery",
@@ -32,8 +30,7 @@ const DATA = {
     icon: <Truck size={40} />,
     desc: "Собственная служба доставки с автоматизацией логистики.",
     benefits: ["Экономия на комиссиях", "Собственная база клиентов"],
-    results: { val: "0%", label: "Комиссия" },
-    slug: "delivery"
+    results: { val: "0%", label: "Комиссия" }
   },
   "4": {
     title: "Мобильное приложение",
@@ -41,8 +38,7 @@ const DATA = {
     icon: <Smartphone size={40} />,
     desc: "Ваше собственное приложение в сторах. Прямой доступ к клиенту 24/7.",
     benefits: ["Бесплатные Push-уведомления", "Рост повторных продаж"],
-    results: { val: "+40%", label: "Возвратность" },
-    slug: "app"
+    results: { val: "+40%", label: "Возвратность" }
   },
   "5": {
     title: "Программа лояльности",
@@ -50,8 +46,7 @@ const DATA = {
     icon: <Heart size={40} />,
     desc: "Цифровой кэшбэк и персональные акции.",
     benefits: ["Автоматизация маркетинга", "RFM-аналитика"],
-    results: { val: "+25%", label: "Retention" },
-    slug: "loyalty"
+    results: { val: "+25%", label: "Retention" }
   },
   "6": {
     title: "App Clip",
@@ -59,8 +54,7 @@ const DATA = {
     icon: <SmartphoneNfc size={40} />,
     desc: "Замена физическим пейджерам на смартфонах гостей.",
     benefits: ["Без установки приложения", "Уведомление на экран"],
-    results: { val: "Modern", label: "Сервис" },
-    slug: "appclip"
+    results: { val: "Modern", label: "Сервис" }
   },
   "7": {
     title: "Автоподтягивание счета",
@@ -68,8 +62,7 @@ const DATA = {
     icon: <RefreshCcw size={40} />,
     desc: "Автоматическая синхронизация счета с QR-кодом.",
     benefits: ["Оплата без официанта", "Интеграция с Kaspi QR"],
-    results: { val: "-5 мин", label: "Время оплаты" },
-    slug: "autocheck"
+    results: { val: "-5 мин", label: "Время оплаты" }
   },
   "8": {
     title: "Киоск самообслуживания",
@@ -77,8 +70,7 @@ const DATA = {
     icon: <Monitor size={40} />,
     desc: "Интерактивный терминал для заказа и оплаты.",
     benefits: ["Работает 24/7", "Максимальный чек"],
-    results: { val: "+20%", label: "Средний чек" },
-    slug: "kiosk"
+    results: { val: "+20%", label: "Средний чек" }
   },
   "9": {
     title: "Guest 360",
@@ -86,8 +78,7 @@ const DATA = {
     icon: <FileSearch size={40} />,
     desc: "Единая панель управления данными о гостях.",
     benefits: ["Аналитика чеков", "Сбор обратной связи"],
-    results: { val: "100%", label: "Прозрачность" },
-    slug: "analytics"
+    results: { val: "100%", label: "Прозрачность" }
   }
 };
 
@@ -95,24 +86,16 @@ export function ProductDetailPage() {
   const { productId } = useParams();
   const navigate = useNavigate();
 
-  // 1. Пытаемся найти по прямому ключу (1, 2, p1, p2...)
-  let product = DATA[productId] || DATA[productId?.replace('p', '')];
-
-  // 2. Если не нашли, ищем по "slug" (если в URL написано слово вместо цифры)
-  if (!product) {
-    product = Object.values(DATA).find(p => p.slug === productId);
-  }
+  // Очищаем ID (убираем префикс 'p', если он есть)
+  const id = productId ? productId.replace('p', '') : "";
+  const product = DATA[id];
 
   if (!product) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white p-10 text-center">
-        <div className="mb-6 p-4 bg-red-50 text-red-500 rounded-2xl font-mono text-sm">
-          DEBUG: ID из URL = "{productId}"
-        </div>
-        <h2 className="text-2xl font-black text-gray-800 mb-4">Упс! Продукт не найден</h2>
-        <p className="text-gray-400 mb-8">Система не может найти данные для этого адреса.</p>
-        <button onClick={() => navigate('/')} className="bg-black text-white px-8 py-3 rounded-full font-bold">
-          Вернуться в начало
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <p className="text-gray-400 mb-4">ID: {productId} (Чистый: {id}) не найден</p>
+        <button onClick={() => navigate('/')} className="text-[#1FCC59] font-bold underline">
+          На главную
         </button>
       </div>
     );
@@ -121,7 +104,7 @@ export function ProductDetailPage() {
   return (
     <div className="min-h-screen bg-[#F4F7F9] text-[#2D3139] pb-10">
       <div className="max-w-4xl mx-auto px-6 pt-10">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-400 font-black text-[10px] uppercase tracking-widest mb-10">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-400 font-bold text-[10px] uppercase tracking-widest mb-10">
           <ChevronLeft size={16} /> Назад
         </button>
 
