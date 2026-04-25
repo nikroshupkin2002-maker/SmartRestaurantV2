@@ -2,25 +2,27 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-// Импорт твоих страниц
-import { CalculatorPage } from './pages/CalculatorPage'; // Главная с калькулятором
-import { ProductDetailPage } from './pages/ProductDetailPage'; // Деталка
+// Импорт всех твоих страниц
+import { HomePage } from './pages/HomePage'; // Твоя самая первая страница
+import { CalculatorPage } from './pages/CalculatorPage'; // Страница расчета
+import { ProductDetailPage } from './pages/ProductDetailPage'; // Страница продукта
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-[#F4F7F9]">
         <Routes>
-          {/* Главная страница с расчетом КП */}
-          <Route path="/" element={<CalculatorPage />} />
+          {/* 1. Самая первая страница (Лендинг) */}
+          <Route path="/" element={<HomePage />} />
 
-          {/* Важно: используем :productId. 
-              Это позволит странице ProductDetailPage вытащить ID из ссылки.
-          */}
+          {/* 2. Страница калькулятора (например, по адресу /calc) */}
+          <Route path="/calculator" element={<CalculatorPage />} />
+
+          {/* 3. Детальная страница продукта */}
           <Route path="/product/:productId" element={<ProductDetailPage />} />
 
-          {/* Редирект на главную, если зашли по странному адресу */}
-          <Route path="*" element={<CalculatorPage />} />
+          {/* Редирект: если юзер запутался, кидаем на главную */}
+          <Route path="*" element={<HomePage />} />
         </Routes>
       </div>
     </Router>
