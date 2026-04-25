@@ -1,9 +1,7 @@
 import { deliveryContent } from './delivery';
 import { noCashierContent } from './no-cashier';
-// Сюда будем импортировать остальные файлы по мере их создания
 
 export const PRODUCT_DETAILS_MAP = {
-  p3: deliveryContent,
-  p1: noCashierContent,
-  // p2: noWaiterContent, и так далее
+  p1: noCashierContent, // Связываем ID p1 с контентом "Без кассира"
+  p3: deliveryContent,  // Связываем ID p3 с контентом "Доставка"
 };
