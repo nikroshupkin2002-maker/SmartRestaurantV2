@@ -12,7 +12,7 @@
   }
 }
 
-/* Возвращаем скругления кнопкам и карточкам */
+/* Скругления */
 .rounded-3xl {
   border-radius: 1.5rem !important;
 }
@@ -27,8 +27,42 @@
 }
 
 @media print {
+  /* Убираем лишние отступы браузера и скрываем его колонтитулы */
+  @page { 
+    margin: 0; 
+    size: auto; 
+  }
+
   .no-print { display: none !important; }
-  .print-only { display: block !important; width: 100%; }
-  body { background-color: white !important; display: block !important; }
-  @page { margin: 1.5cm; }
+  
+  .print-only { 
+    display: block !important; 
+    width: 100%; 
+    background-color: white !important;
+  }
+
+  body { 
+    background-color: white !important; 
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Класс для каждой страницы КП */
+  .pdf-page {
+    page-break-after: always;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    width: 210mm; /* Ширина A4 */
+    min-height: 297mm; /* Высота A4 */
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  /* Чтобы картинки и блоки не разрывались пополам */
+  img, .break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }
