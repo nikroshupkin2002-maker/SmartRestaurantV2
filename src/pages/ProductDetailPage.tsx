@@ -8,6 +8,7 @@ import {
   Users, TrendingDown, Box, Clock, BarChart3
 } from 'lucide-react';
 
+// Строгий порядок для переключения
 const PRODUCT_KEYS = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9"];
 
 const PRODUCT_INFO = {
@@ -18,9 +19,9 @@ const PRODUCT_INFO = {
     icon: <MousePointer2 size={40}/>, 
     desc: "Система позволяет гостю самостоятельно оформить и оплатить заказ через смартфон, полностью исключая ожидание в очереди у кассы.",
     benefits: [
-      { title: "Отсутствие очередей", text: "Весь процесс выбора и оплаты происходит в телефоне гостя, разгружая кассовую зону.", icon: <Users className="text-blue-400" /> },
+      { title: "Отсутствие очередей", text: "Весь процесс выбора и оплаты происходит в телефоне гостя.", icon: <Users className="text-blue-400" /> },
       { title: "Рост среднего чека", text: "Умная система рекомендаций предлагает доп. товары автоматически.", icon: <TrendingDown className="text-green-400" /> },
-      { title: "Анализ предпочтений", text: "Прозрачная статистика по популярным позициям и поведению клиентов.", icon: <BarChart3 className="text-purple-400" /> }
+      { title: "Анализ предпочтений", text: "Статистика по популярным позициям и поведению клиентов.", icon: <BarChart3 className="text-purple-400" /> }
     ],
     res: "+16%", resLabel: "Средний чек",
     images: [
@@ -35,7 +36,7 @@ const PRODUCT_INFO = {
     title: "Заказ «Без официанта»", 
     price: "120 000 ₸", 
     icon: <UtensilsCrossed size={40}/>, 
-    desc: "Оцифруйте каждый стол. Гости сами делают заказы и дозаказы через QR-меню, не дожидаясь персонала.",
+    desc: "Оцифруйте каждый стол. Гости сами делают заказы и дозаказы через QR-меню.",
     benefits: [
       { title: "Минус 15 минут", text: "Среднее время обслуживания сокращается за счет мгновенного приема заказа.", icon: <Clock className="text-orange-400" /> },
       { title: "Оборачиваемость", text: "Столы освобождаются на 30% быстрее, позволяя принимать больше гостей.", icon: <TrendingDown className="text-green-400" /> },
@@ -52,7 +53,7 @@ const PRODUCT_INFO = {
   "p3": { 
     isDetailed: true,
     title: "SR Delivery", price: "60 000 ₸", icon: <Truck size={40}/>, 
-    desc: "Агрегатор курьерских служб в одном окне. Экономьте на комиссиях и управляйте своей доставкой эффективно.",
+    desc: "Агрегатор курьерских служб в одном окне. Экономьте на комиссиях и управляйте своей доставкой.",
     benefits: [
       { title: "Агрегатор служб", text: "Яндекс, Wolt Drive и Choco в едином интерфейсе.", icon: <Box className="text-orange-400" /> },
       { title: "Умный подбор", text: "Выбор самого дешевого и быстрого курьера автоматически.", icon: <Zap className="text-yellow-400" /> },
@@ -60,28 +61,27 @@ const PRODUCT_INFO = {
     ],
     res: "0%", resLabel: "Комиссия",
     images: [
-      { url: "/assets/delivery_1.jfif", desc: "Интерфейс выбора" },
-      { url: "/assets/delivery_2.jfif", desc: "Корзина доставки" },
-      { url: "/assets/delivery_3.jfif", desc: "Оплата" }
+      { url: "/assets/delivery_1.jpg", desc: "Интерфейс выбора" },
+      { url: "/assets/delivery_2.jpg", desc: "Корзина доставки" },
+      { url: "/assets/delivery_3.jpg", desc: "Оплата" }
     ],
     qrImage: { url: "/assets/delivery_qr.png", desc: "Тест-драйв доставки" }
   },
   "p7": { 
     isDetailed: true,
     title: "Автоподтягивание счета", price: "60 000 ₸", icon: <RefreshCcw size={40}/>, 
-    desc: "Технология автоматического формирования счета при сканировании QR. Гость сам закрывает стол в один клик.",
+    desc: "Технология автоматического формирования счета при сканировании QR. Гость сам закрывает стол.",
     benefits: [
       { title: "Оплата в 2 клика", text: "Интеграция с Kaspi.kz, Apple Pay и картами.", icon: <CreditCard className="text-purple-400" /> },
       { title: "Авто-закрытие", text: "Мгновенная синхронизация с iiko или r-keeper.", icon: <RefreshCcw className="text-green-400" /> }
     ],
     res: "-15 мин", resLabel: "На каждом столе",
     images: [
-      { url: "/assets/bill_1.jfif", desc: "Детализация счета" },
-      { url: "/assets/bill_2.jfif", desc: "Выбор способа оплаты" }
+      { url: "/assets/bill_1.jpg", desc: "Детализация счета" },
+      { url: "/assets/bill_2.jpg", desc: "Выбор способа оплаты" }
     ],
     qrImage: { url: "/assets/bill_qr.png", desc: "Тест-драйв оплаты по QR" }
   },
-  // Базовые данные для остальных
   "p4": { title: "Мобильное приложение", price: "420 000 ₸", icon: <Smartphone />, desc: "Ваш бренд в смартфонах гостей.", benefits: ["Push-уведомления", "Личный кабинет"], res: "+40%" },
   "p5": { title: "Программа лояльности", price: "60 000 ₸", icon: <Heart />, desc: "Бонусы и кэшбэк.", benefits: ["Возвратность", "RFM-анализ"], res: "+25%" },
   "p6": { title: "App Clip", price: "35 000 ₸", icon: <SmartphoneNfc />, desc: "Замена пейджерам.", benefits: ["Без установки", "Скорость"], res: "Modern" },
@@ -140,7 +140,7 @@ export function ProductDetailPage() {
 
             <section className="mb-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {product.benefits.map((item, i) => (
-                <div key={i} className="p-10 bg-white rounded-[40px] border border-gray-100 shadow-sm flex flex-col gap-6 text-left hover:border-[#1FCC59]/30 transition-colors">
+                <div key={i} className="p-10 bg-white rounded-[40px] border border-gray-100 shadow-sm flex flex-col gap-6 text-left">
                   <div className="p-4 bg-gray-50 rounded-2xl w-fit">{item.icon}</div>
                   <div>
                     <h3 className="text-xl font-black mb-2 uppercase">{item.title}</h3>
@@ -151,6 +151,7 @@ export function ProductDetailPage() {
             </section>
 
             <section className="mb-20">
+              {/* Исправленная центровка: теперь 2 фото будут по центру рядом */}
               <div className="flex flex-wrap justify-center gap-8">
                 {product.images.map((img, i) => (
                   <div key={i} className="max-w-[300px] w-full">
@@ -165,13 +166,13 @@ export function ProductDetailPage() {
 
             {product.qrImage && (
               <section className="mb-24 px-4">
-                <div className="bg-white rounded-[48px] p-10 border-4 border-[#1FCC59] flex flex-col md:flex-row items-center gap-12 shadow-2xl shadow-green-900/5">
+                <div className="bg-white rounded-[48px] p-10 border-4 border-[#1FCC59] flex flex-col md:flex-row items-center gap-12 shadow-2xl">
                   <div className="w-48 h-48 bg-white p-2 rounded-3xl shrink-0">
                     <img src={product.qrImage.url} alt="QR" className="w-full h-full" />
                   </div>
                   <div className="text-center md:text-left">
-                    <h2 className="text-3xl md:text-4xl font-black mb-4 uppercase">{product.qrImage.desc}</h2>
-                    <p className="text-gray-500 font-bold text-lg">Наведите камеру смартфона, чтобы увидеть, как это работает в реальности.</p>
+                    <h2 className="text-3xl font-black mb-4 uppercase">{product.qrImage.desc}</h2>
+                    <p className="text-gray-500 font-bold text-lg">Наведите камеру смартфона для тест-драйва.</p>
                   </div>
                 </div>
               </section>
@@ -186,10 +187,10 @@ export function ProductDetailPage() {
           </div>
         )}
 
-        {/* ПАНЕЛЬ НАВИГАЦИИ */}
+        {/* НАВИГАЦИЯ: Путь строго как в App.tsx (/products/p...) */}
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900/95 backdrop-blur-2xl p-3 rounded-[32px] flex items-center gap-4 shadow-2xl z-[100] border border-white/10">
           <button 
-            onClick={() => prevId && navigate(`/product/${prevId}`)}
+            onClick={() => prevId && navigate(`/products/${prevId}`)} 
             className={`p-4 rounded-2xl transition-all ${prevId ? 'text-white hover:bg-white/10' : 'text-gray-700 cursor-not-allowed'}`}
           >
             <ChevronLeft size={24} />
@@ -204,7 +205,7 @@ export function ProductDetailPage() {
           <div className="h-8 w-px bg-white/10"></div>
 
           <button 
-            onClick={() => nextId && navigate(`/product/${nextId}`)}
+            onClick={() => nextId && navigate(`/products/${nextId}`)}
             className={`p-4 rounded-2xl transition-all ${nextId ? 'text-white hover:bg-white/10' : 'text-gray-700 cursor-not-allowed'}`}
           >
             <ChevronRight size={24} />
