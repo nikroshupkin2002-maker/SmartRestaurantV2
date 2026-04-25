@@ -1,115 +1,118 @@
 // @ts-nocheck
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ChevronLeft, Truck, MousePointer2, Zap, TrendingUp, 
   Clock, UtensilsCrossed, Smartphone, CheckCircle2, 
-  Heart, Monitor, Megaphone, CreditCard, UserCheck, 
-  SmartphoneNfc, FileSearch, RefreshCcw 
+  Heart, Monitor, FileSearch, RefreshCcw, SmartphoneNfc 
 } from 'lucide-react';
 
 const DATA = {
   "1": {
     title: "Заказ «Без кассира»",
     price: "84 000 ₸ / лок.",
-    icon: <MousePointer2 size={40} className="text-[#1FCC59]" />,
-    desc: "Быстрый процесс заказа через терминалы или QR без очередей. Идеально для фаст-фуда и зон самообслуживания.",
-    benefits: ["Ускорение очереди на 20%", "Авто-предложение допов (Upsell)", "Снижение нагрузки на персонал"],
-    results: { val: "+16%", label: "Средний чек" }
+    icon: <MousePointer2 size={40} />,
+    desc: "Быстрый процесс заказа через терминалы или QR без очередей.",
+    benefits: ["Ускорение очереди на 20%", "Авто-предложение допов (Upsell)"],
+    results: { val: "+16%", label: "Средний чек" },
+    slug: "smart-order" 
   },
   "2": {
     title: "Заказ «Без официанта»",
     price: "120 000 ₸ / лок.",
-    icon: <UtensilsCrossed size={40} className="text-[#1FCC59]" />,
-    desc: "Мгновенный заказ со стола и полная оцифровка каждого гостя. Позволяет обслуживать больше столов меньшим штатом.",
-    benefits: ["Освобождение персонала от приема заказов", "Электронное меню с яркими фото", "Сокращение времени ожидания"],
-    results: { val: "+25%", label: "Оборачиваемость" }
+    icon: <UtensilsCrossed size={40} />,
+    desc: "Мгновенный заказ со стола и полная оцифровка каждого гостя.",
+    benefits: ["Освобождение персонала", "Электронное меню"],
+    results: { val: "+25%", label: "Оборачиваемость" },
+    slug: "qr-order"
   },
   "3": {
     title: "SR Delivery",
     price: "60 000 ₸ / лок.",
-    icon: <Truck size={40} className="text-[#1FCC59]" />,
-    desc: "Собственная служба доставки с автоматизацией логистики и контролем курьеров.",
-    benefits: ["Экономия на комиссиях агрегаторов", "Собственная база клиентов", "Умное распределение заказов"],
-    results: { val: "0%", label: "Комиссия" }
+    icon: <Truck size={40} />,
+    desc: "Собственная служба доставки с автоматизацией логистики.",
+    benefits: ["Экономия на комиссиях", "Собственная база клиентов"],
+    results: { val: "0%", label: "Комиссия" },
+    slug: "delivery"
   },
   "4": {
     title: "Мобильное приложение",
     price: "От 420 000 ₸",
-    icon: <Smartphone size={40} className="text-[#1FCC59]" />,
+    icon: <Smartphone size={40} />,
     desc: "Ваше собственное приложение в сторах. Прямой доступ к клиенту 24/7.",
-    benefits: ["Бесплатные Push-уведомления", "Рост повторных продаж", "Брендированный дизайн"],
-    results: { val: "+40%", label: "Возвратность" }
+    benefits: ["Бесплатные Push-уведомления", "Рост повторных продаж"],
+    results: { val: "+40%", label: "Возвратность" },
+    slug: "app"
   },
   "5": {
     title: "Программа лояльности",
     price: "60 000 ₸",
-    icon: <Heart size={40} className="text-[#1FCC59]" />,
-    desc: "Цифровой кэшбэк и персональные акции, которые заставляют гостей возвращаться.",
-    benefits: ["Автоматизация маркетинга", "RFM-аналитика базы", "Рост базы контактов"],
-    results: { val: "+25%", label: "Retention" }
+    icon: <Heart size={40} />,
+    desc: "Цифровой кэшбэк и персональные акции.",
+    benefits: ["Автоматизация маркетинга", "RFM-аналитика"],
+    results: { val: "+25%", label: "Retention" },
+    slug: "loyalty"
   },
   "6": {
     title: "App Clip",
     price: "35 000 ₸ / лок.",
-    icon: <SmartphoneNfc size={40} className="text-[#1FCC59]" />,
-    desc: "Современная замена физическим пейджерам на смартфонах ваших гостей.",
-    benefits: ["Работает мгновенно без установки", "Уведомление о готовности на экран", "Экономия на оборудовании"],
-    results: { val: "Modern", label: "Сервис" }
+    icon: <SmartphoneNfc size={40} />,
+    desc: "Замена физическим пейджерам на смартфонах гостей.",
+    benefits: ["Без установки приложения", "Уведомление на экран"],
+    results: { val: "Modern", label: "Сервис" },
+    slug: "appclip"
   },
   "7": {
     title: "Автоподтягивание счета",
     price: "60 000 ₸ / лок.",
-    icon: <RefreshCcw size={40} className="text-[#1FCC59]" />,
-    desc: "Автоматическая синхронизация счета в iiko/r-keeper с QR-кодом на столе.",
-    benefits: ["Оплата без участия официанта", "Всегда актуальный счет", "Интеграция с Kaspi QR"],
-    results: { val: "-5 мин", label: "Время оплаты" }
+    icon: <RefreshCcw size={40} />,
+    desc: "Автоматическая синхронизация счета с QR-кодом.",
+    benefits: ["Оплата без официанта", "Интеграция с Kaspi QR"],
+    results: { val: "-5 мин", label: "Время оплаты" },
+    slug: "autocheck"
   },
   "8": {
     title: "Киоск самообслуживания",
     price: "60 000 ₸ / ед.",
-    icon: <Monitor size={40} className="text-[#1FCC59]" />,
-    desc: "Интерактивный терминал для самостоятельного заказа и оплаты.",
-    benefits: ["Работает без перерывов", "Исключает человеческий фактор", "Максимально увеличивает чек"],
-    results: { val: "+20%", label: "Средний чек" }
+    icon: <Monitor size={40} />,
+    desc: "Интерактивный терминал для заказа и оплаты.",
+    benefits: ["Работает 24/7", "Максимальный чек"],
+    results: { val: "+20%", label: "Средний чек" },
+    slug: "kiosk"
   },
   "9": {
     title: "Guest 360",
     price: "64 000 ₸ / сеть",
-    icon: <FileSearch size={40} className="text-[#1FCC59]" />,
-    desc: "Единая панель управления данными о гостях и их предпочтениях.",
-    benefits: ["Глубокая аналитика чеков", "Сбор обратной связи", "Прогноз поведения гостей"],
-    results: { val: "100%", label: "Прозрачность" }
+    icon: <FileSearch size={40} />,
+    desc: "Единая панель управления данными о гостях.",
+    benefits: ["Аналитика чеков", "Сбор обратной связи"],
+    results: { val: "100%", label: "Прозрачность" },
+    slug: "analytics"
   }
 };
-
-// Создаем "зеркальные" ключи (теперь база понимает и "1" и "p1")
-const EXTENDED_DATA = { ...DATA };
-Object.keys(DATA).forEach(key => {
-  EXTENDED_DATA[`p${key}`] = DATA[key];
-});
 
 export function ProductDetailPage() {
   const { productId } = useParams();
   const navigate = useNavigate();
 
-  // Отладка: выведет в консоль браузера, какой ID реально прилетел
-  useEffect(() => {
-    console.log("Current Product ID from URL:", productId);
-  }, [productId]);
+  // 1. Пытаемся найти по прямому ключу (1, 2, p1, p2...)
+  let product = DATA[productId] || DATA[productId?.replace('p', '')];
 
-  const product = EXTENDED_DATA[productId];
+  // 2. Если не нашли, ищем по "slug" (если в URL написано слово вместо цифры)
+  if (!product) {
+    product = Object.values(DATA).find(p => p.slug === productId);
+  }
 
   if (!product) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-10 text-center">
-        <h2 className="text-3xl font-black text-gray-300 mb-2 uppercase italic">Data Missing</h2>
-        <p className="text-gray-400 mb-6 font-medium">ID Продукта: <span className="text-red-400 font-mono">"{productId}"</span> не найден в базе.</p>
-        <button 
-          onClick={() => navigate(-1)} 
-          className="px-8 py-3 bg-[#1FCC59] text-white rounded-full font-black shadow-lg shadow-[#1FCC59]/30 active:scale-95 transition-all"
-        >
-          ВЕРНУТЬСЯ НАЗАД
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white p-10 text-center">
+        <div className="mb-6 p-4 bg-red-50 text-red-500 rounded-2xl font-mono text-sm">
+          DEBUG: ID из URL = "{productId}"
+        </div>
+        <h2 className="text-2xl font-black text-gray-800 mb-4">Упс! Продукт не найден</h2>
+        <p className="text-gray-400 mb-8">Система не может найти данные для этого адреса.</p>
+        <button onClick={() => navigate('/')} className="bg-black text-white px-8 py-3 rounded-full font-bold">
+          Вернуться в начало
         </button>
       </div>
     );
@@ -118,16 +121,12 @@ export function ProductDetailPage() {
   return (
     <div className="min-h-screen bg-[#F4F7F9] text-[#2D3139] pb-10">
       <div className="max-w-4xl mx-auto px-6 pt-10">
-        
-        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-400 font-black text-[10px] uppercase tracking-[0.2em] mb-10 hover:text-[#1FCC59] transition-all">
-          <ChevronLeft size={16} strokeWidth={3} /> Назад
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-400 font-black text-[10px] uppercase tracking-widest mb-10">
+          <ChevronLeft size={16} /> Назад
         </button>
 
-        <div className="bg-white rounded-[40px] p-8 md:p-12 shadow-sm border border-gray-100 relative overflow-hidden">
-          {/* Декор на фоне */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#E8F9EE] rounded-bl-[100px] -mr-10 -mt-10 opacity-50" />
-
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 relative z-10">
+        <div className="bg-white rounded-[40px] p-8 md:p-12 shadow-sm border border-gray-100">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
             <div className="flex items-center gap-6">
               <div className="p-6 bg-[#E8F9EE] rounded-[28px] text-[#1FCC59]">
                 {product.icon}
@@ -137,32 +136,19 @@ export function ProductDetailPage() {
                 <p className="text-[#1FCC59] font-black text-2xl mt-2">{product.price}</p>
               </div>
             </div>
-            
-            <div className="bg-[#1FCC59] text-white p-8 rounded-[35px] text-center min-w-[180px] shadow-xl shadow-[#1FCC59]/20">
+            <div className="bg-[#1FCC59] text-white p-8 rounded-[35px] text-center min-w-[180px]">
               <div className="text-4xl font-black">{product.results.val}</div>
               <div className="text-[11px] font-black uppercase tracking-widest opacity-80 mt-1">{product.results.label}</div>
             </div>
           </div>
-
-          <p className="text-xl md:text-2xl text-gray-400 font-medium leading-relaxed mb-12 max-w-2xl">
-            {product.desc}
-          </p>
-
+          <p className="text-xl md:text-2xl text-gray-400 font-medium leading-relaxed mb-12">{product.desc}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {product.benefits.map((text, i) => (
-              <div key={i} className="flex items-start gap-4 p-6 bg-gray-50 rounded-[28px] border border-gray-100 hover:border-[#1FCC59]/30 transition-colors group">
-                <div className="mt-1">
-                  <CheckCircle2 className="text-[#1FCC59] group-hover:scale-110 transition-transform" size={24} strokeWidth={3} />
-                </div>
-                <span className="font-bold text-gray-700 leading-tight">{text}</span>
+              <div key={i} className="flex items-start gap-4 p-6 bg-gray-50 rounded-[28px] border border-gray-100">
+                <CheckCircle2 className="text-[#1FCC59]" size={24} />
+                <span className="font-bold text-gray-700">{text}</span>
               </div>
             ))}
-          </div>
-        </div>
-
-        <div className="mt-12 text-center">
-          <div className="inline-block px-6 py-2 bg-gray-100 rounded-full text-[10px] font-black text-gray-400 uppercase tracking-widest">
-            Choco Business • Solution Details 2026
           </div>
         </div>
       </div>
