@@ -1,95 +1,111 @@
-import { useParams, Link, useNavigate } from "react-router-dom";
-import { PRODUCTS } from "../data/products";
-import { ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+// @ts-nocheck
+import React from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ChevronLeft, Truck, Zap, TrendingUp, BarChart3, ShieldCheck, QrCode, Smartphone, Users, LayoutGrid, Monitor, CreditCard } from 'lucide-react';
+
+// Объект с данными продуктов (база знаний)
+const PRODUCT_DETAILS = {
+  p3: {
+    title: "SR Delivery",
+    icon: <Truck size={32} />,
+    description: "Полноценная экосистема для запуска и автоматизации вашей собственной службы доставки без зависимости от агрегаторов.",
+    price: "60 000 ₸ / лок.",
+    qrUrl: "https://smart-delivery-demo.chocofood.kz",
+    benefits: [
+      { 
+        title: "Автоматизация", 
+        icon: <Zap size={20} />, 
+        items: [
+          "Интеграция курьерских служб: Яндекс Доставка, Wolt Drive, Choco Доставка.",
+          "Автоматический подбор курьера по скорости и цене в режиме реального времени."
+        ]
+      },
+      { 
+        title: "Экономия и рост", 
+        icon: <TrendingUp size={20} />, 
+        items: [
+          "Экономия на комиссии агрегаторов (до 30% с каждого заказа).",
+          "Рост среднего чека на 16% за счет умных допродаж (на 30% проникновения)."
+        ]
+      }
+    ],
+    stats: [
+      { label: "Синхронизация", value: "100%", desc: "Полная интеграция с кассовой системой." },
+      { label: "Прирост заказов", value: "+20%", desc: "За счет удобства собственного сервиса." },
+      { label: "Комиссия", value: "0 ₸", desc: "Никаких процентов сторонним сервисам." }
+    ]
+  }
+  // Сюда будем добавлять p1, p2, p4 и т.д. по очереди
+};
 
 export function ProductDetailPage() {
-  const { id } = useParams();
+  const { productId } = useParams();
   const navigate = useNavigate();
-  
-  const currentIndex = PRODUCTS.findIndex(p => p.id === id);
-  const product = PRODUCTS[currentIndex];
+  const data = PRODUCT_DETAILS[productId];
 
-  if (!product) return <div className="p-20 text-center">Продукт не найден</div>;
-
-  const prevProduct = PRODUCTS[currentIndex - 1];
-  const nextProduct = PRODUCTS[currentIndex + 1];
+  if (!data) return <div className="p-20 text-center font-bold">Продукт в разработке...</div>;
 
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-900">
-      <div className="border-b border-gray-50 sticky top-0 bg-white/80 backdrop-blur-md z-10">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
-          <Link to="/products" className="flex items-center gap-2 text-gray-400 hover:text-[#1FCC59] transition-colors">
-            <ArrowLeft size={20} />
-            <span className="font-medium text-sm">Назад к списку</span>
-          </Link>
-          <div className="flex gap-4">
-             <button 
-               disabled={!prevProduct}
-               onClick={() => navigate(`/products/${prevProduct?.id}`)}
-               className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-10 transition-all border border-gray-100"
-             >
-               <ChevronLeft size={24} />
-             </button>
-             <button 
-               disabled={!nextProduct}
-               onClick={() => navigate(`/products/${nextProduct?.id}`)}
-               className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-10 transition-all border border-gray-100"
-             >
-               <ChevronRight size={24} />
-             </button>
+    <div className="min-h-screen bg-[#F4F7F9] font-sans text-[#2D3139] pb-20">
+      <div className="max-w-4xl mx-auto px-6 pt-8">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-gray-400 font-bold text-[11px] uppercase tracking-widest mb-6 hover:text-[#1FCC59]">
+          <ChevronLeft size={14} /> Назад
+        </button>
+
+        <div className="bg-white rounded-[32px] p-8 md:p-12 shadow-sm border border-gray-100 mb-8">
+          <div className="flex flex-col md:flex-row justify-between gap-8 items-start">
+            <div className="flex-1">
+              <div className="w-16 h-16 bg-[#E8F9EE] rounded-2xl flex items-center justify-center text-[#1FCC59] mb-6">
+                {data.icon}
+              </div>
+              <h1 className="text-4xl font-black text-[#1A1D23] mb-4">{data.title}</h1>
+              <p className="text-xl text-gray-500 leading-relaxed mb-6">{data.description}</p>
+              <span className="px-4 py-2 bg-[#1FCC59] text-white rounded-xl font-black text-sm">{data.price}</span>
+            </div>
+            
+            <div className="bg-[#F8FAFC] p-6 rounded-[24px] border border-gray-100 flex flex-col items-center">
+              <div className="bg-white p-3 rounded-xl mb-3 shadow-sm">
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data.qrUrl}`} 
+                  alt="QR Code"
+                  className="w-[120px] h-[120px]"
+                />
+              </div>
+              <span className="text-[10px] font-black text-[#1FCC59] uppercase text-center">Пример работы <br/> (отсканируйте)</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-16">
-        <AnimatePresence mode="wait">
-          <motion.div 
-            key={product.id}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-          >
-            <div className="max-w-3xl">
-                <h1 className="text-5xl md:text-7xl font-bold mb-10 tracking-tight leading-[1.1]">{product.title}</h1>
-                <p className="text-2xl text-gray-400 leading-relaxed mb-16">
-                {product.fullDescription}
-                </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
-              <div className="bg-[#F8F9FA] p-10 rounded-[48px] border border-gray-100">
-                <h3 className="text-xl font-bold mb-10">Что дает вашему бизнесу:</h3>
-                <ul className="space-y-6">
-                  {product.benefits.map((benefit, i) => (
-                    <li key={i} className="flex items-start gap-4">
-                      <div className="mt-1.5 bg-[#1FCC59] p-1 rounded-full shadow-lg shadow-[#1FCC59]/20">
-                        <CheckCircle2 className="text-white" size={14} />
-                      </div>
-                      <span className="text-gray-700 font-medium text-lg">{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {data.benefits.map((b, i) => (
+            <div key={i} className="bg-white p-8 rounded-[28px] shadow-sm border border-gray-100">
+              <div className="flex items-center gap-3 mb-4 text-[#1FCC59]">
+                {b.icon}
+                <h3 className="font-black text-[15px] uppercase tracking-wide">{b.title}</h3>
               </div>
-
-              <div className="flex flex-col gap-6 justify-center">
-                {product.stats ? (
-                  product.stats.map((s, i) => (
-                    <div key={i} className="bg-white border-2 border-gray-50 p-12 rounded-[48px] shadow-sm flex flex-col items-center">
-                      <span className="text-7xl font-black text-[#1FCC59] mb-2">{s.value}</span>
-                      <span className="text-gray-400 font-bold uppercase tracking-widest text-xs">{s.label}</span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="bg-gray-900 text-white p-12 rounded-[48px] h-full flex flex-col justify-end">
-                     <p className="text-3xl font-bold mb-4">Готовое к интеграции решение</p>
-                     <p className="text-gray-400">Часть экосистемы Smart Restaurant</p>
-                  </div>
-                )}
-              </div>
+              <ul className="space-y-3 text-sm text-gray-600">
+                {b.items.map((item, j) => (
+                  <li key={j} className="flex items-start gap-2">
+                    <ShieldCheck size={16} className="text-[#1FCC59] mt-0.5 shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
-          </motion.div>
-        </AnimatePresence>
+          ))}
+        </div>
+
+        <div className="mt-8 bg-[#1A1D23] p-10 rounded-[32px] text-white">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {data.stats.map((s, i) => (
+              <div key={i} className="text-center md:text-left">
+                <div className="text-[#1FCC59] font-black text-3xl mb-2">{s.value}</div>
+                <div className="text-xs font-bold uppercase tracking-wider mb-1">{s.label}</div>
+                <p className="text-gray-400 text-[11px] leading-relaxed">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
