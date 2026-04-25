@@ -15,7 +15,8 @@ export function CalculatorPage() {
   const navigate = useNavigate();
   const [params, setParams] = useState({
     loc: "1", chd: "100", avg: "5000", marg: "70",
-    aggr: "30", discount: "0", deli: "15", deliAvg: "3500"
+    aggr: "30", discount: "0", deli: "15", deliAvg: "3500",
+    kiosksPerLoc: "1" // Добавили параметр количества киосков
   });
 
   const [selectedProducts, setSelectedProducts] = useState(
@@ -31,6 +32,7 @@ export function CalculatorPage() {
     const M = (Number(params.marg) || 0) / 100;
     const AR = (Number(params.aggr) || 0) / 100;
     const D = (Number(params.discount) || 0) / 100;
+    const K = Number(params.kiosksPerLoc) || 0;
     const days = 30;
     const P = 0.3; // 30% проникновения
 
@@ -39,37 +41,25 @@ export function CalculatorPage() {
     const deli = Number(params.deli) || 0;
     const dAvg = Number(params.deliAvg) || 0;
     
-    // --- 1. ТЕКУЩАЯ ПРИБЫЛЬ ---
     const curHallRev = chd * avg * days * L;
     const curDeliRev = deli * dAvg * days * L;
     const now_profit = ((curHallRev + curDeliRev) * M) - (curDeliRev * AR);
 
-    // --- 2. ОПРЕДЕЛЕНИЕ МАКСИМАЛЬНЫХ БУСТОВ ---
-    let boostChd = 0; // Прирост количества чеков
-    let boostAvg = 0; // Прирост среднего чека
+    let boostChd = 0; 
+    let boostAvg = 0; 
 
-    // Без кассира (p1)
     if (selectedProducts.p1) { boostChd = Math.max(boostChd, 0.20); boostAvg = Math.max(boostAvg, 0.16); }
-    // Без официанта (p2)
     if (selectedProducts.p2) { boostChd = Math.max(boostChd, 0.25); boostAvg = Math.max(boostAvg, 0.16); }
-    // Приложение (p4)
     if (selectedProducts.p4) { boostChd = Math.max(boostChd, 0.30); boostAvg = Math.max(boostAvg, 0.16); }
-    // Лояльность (p5)
     if (selectedProducts.p5) { boostChd = Math.max(boostChd, 0.30); boostAvg = Math.max(boostAvg, 0.12); }
-    // Автосчет (p7)
     if (selectedProducts.p7) { boostChd = Math.max(boostChd, 0.25); }
-    // Киоск (p8)
     if (selectedProducts.p8) { boostChd = Math.max(boostChd, 0.20); boostAvg = Math.max(boostAvg, 0.16); }
-    // Guest 360 (p9)
     if (selectedProducts.p9) { boostChd = Math.max(boostChd, 0.30); }
 
-    // --- 3. РАСЧЕТ SMART ВЫРУЧКИ ---
-    // Зал: применяем бусты к 30% трафика
     const sChd = (chd * (1 - P)) + (chd * (1 + boostChd) * P);
     const sAvg = (avg * (1 - P)) + (avg * (1 + boostAvg) * P);
     const sHallRev = sChd * sAvg * days * L;
 
-    // Доставка: SR Delivery (p3)
     let sDeli = deli;
     let sDAvg = dAvg;
     if (selectedProducts.p3) {
@@ -77,19 +67,23 @@ export function CalculatorPage() {
     }
     const sDeliRev = sDeli * sDAvg * days * L;
 
-    // --- 4. РАСХОДЫ НА ПО ---
+    // --- РАСХОДЫ НА ПО (с учетом киосков) ---
     let totalCost = 0;
     PRODUCTS.forEach(p => {
       if (selectedProducts[p.id]) {
-        if (p.id === 'p4' || p.id === 'p9') totalCost += p.monthlyPrice; // Сетевые
-        else totalCost += p.monthlyPrice * L; // По точкам
+        if (p.id === 'p4' || p.id === 'p9') {
+          totalCost += p.monthlyPrice; 
+        } else if (p.id === 'p8') {
+          // Киоск: цена * кол-во киосков * кол-во точек
+          totalCost += p.monthlyPrice * K * L;
+        } else {
+          totalCost += p.monthlyPrice * L;
+        }
       }
     });
     const final_cost = totalCost * (1 - D);
 
-    // --- 5. ИТОГОВАЯ ПРИБЫЛЬ ---
     let smart_profit = ((sHallRev + sDeliRev) * M) - final_cost;
-    // Комиссия агрегатора исчезает ТОЛЬКО если есть SR Delivery
     if (!selectedProducts.p3) {
       smart_profit -= (sDeliRev * AR);
     }
@@ -110,7 +104,6 @@ export function CalculatorPage() {
                <CalcIcon size={28} className="text-[#1FCC59]" /> Калькулятор выгоды
             </h1>
             
-            {/* ПАРАМЕТРЫ */}
             <div className="grid grid-cols-1 gap-6">
               <section className="bg-white p-8 rounded-[24px] shadow-sm border border-gray-100">
                 <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
@@ -128,16 +121,17 @@ export function CalculatorPage() {
                 <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                   <Plus size={14} /> 2. Комиссии и доставка
                 </h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                   <MiniInput label="Комиссия агр." value={params.aggr} onChange={v => handleInputChange('aggr', v)} suffix="%" />
                   <MiniInput label="Скидка Choco" value={params.discount} onChange={v => handleInputChange('discount', v)} suffix="%" />
                   <MiniInput label="Дост./день" value={params.deli} onChange={v => handleInputChange('deli', v)} />
                   <MiniInput label="Ср. чек дост." value={params.deliAvg} onChange={v => handleInputChange('deliAvg', v)} suffix="₸" />
+                  {/* Новая ячейка для киосков */}
+                  <MiniInput label="Киосков/точка" value={params.kiosksPerLoc} onChange={v => handleInputChange('kiosksPerLoc', v)} />
                 </div>
               </section>
             </div>
 
-            {/* ПРОДУКТЫ */}
             <div className="space-y-4 pt-4">
               <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest pl-2">3. Продукты Smart Restaurant</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -161,7 +155,6 @@ export function CalculatorPage() {
             </div>
           </div>
 
-          {/* ИТОГИ (ПРАВАЯ ПАНЕЛЬ) */}
           <div className="w-full lg:w-[360px]">
             <div className="sticky top-10 bg-white rounded-[32px] p-8 shadow-xl shadow-gray-200/40 border border-gray-50 space-y-6">
               <h3 className="font-bold text-[#1A1D23] text-center text-[15px]">Прогноз за 30 дней</h3>
@@ -174,7 +167,7 @@ export function CalculatorPage() {
               <div className="bg-[#1FCC59] p-6 rounded-2xl text-white text-center shadow-lg shadow-[#1FCC59]/20">
                 <span className="text-[10px] font-bold uppercase tracking-widest mb-1 block opacity-90">Co Smart Restaurant</span>
                 <div className="text-3xl font-black">{formatMoney(results.smart_profit)} ₸</div>
-                <div className="text-[10px] mt-2 opacity-70 font-medium italic">Расходы на ПО: -{formatMoney(results.cost)} ₸</div>
+                <div className="text-[10px] mt-2 opacity-70 font-medium italic">Затраты на ПО: -{formatMoney(results.cost)} ₸</div>
               </div>
 
               <div className={`p-6 rounded-2xl text-center border-2 transition-all ${
@@ -190,12 +183,6 @@ export function CalculatorPage() {
                 }`}>
                   {results.diff > 0 ? `+${formatMoney(results.diff)}` : formatMoney(results.diff)} ₸
                 </div>
-              </div>
-
-              <div className="pt-4 text-center">
-                <p className="text-[9px] text-gray-300 leading-relaxed italic">
-                  *Эффект 30% проникновения: расчет преимуществ ведется только на целевую долю трафика.
-                </p>
               </div>
             </div>
           </div>
